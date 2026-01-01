@@ -8,7 +8,7 @@ A simple, user-friendly GUI tool to calculate how many missions and points you n
 
 Made with ❤️ by [P13rlU](https://github.com/P13rlU).
 
-Credit for the Original Project go to: [xSkullHD](https://www.nexusmods.com/profile/xSkullHD/mods?gameId=7106)
+Credits for the Original Project go to: [xSkullHD](https://www.nexusmods.com/profile/xSkullHD/mods?gameId=7106)
 
 ---
 
