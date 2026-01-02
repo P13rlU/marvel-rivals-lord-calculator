@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox, font, colorchooser
 import math
 import json
 import os
+import webbrowser
 
 # Rank thresholds based on PDF (points needed to reach next rank from current)
 RANK_THRESHOLDS = {
@@ -25,7 +26,7 @@ POINTS_PER_MISSION = {
 class MarvelRivalsCalculator(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Marvel Rivals - Lord Rank Calculator v1.1 ~ Made by P13r")
+        self.title("Marvel Rivals - Lord Rank Calculator v1.2 ~ Made by P13r")
         self.geometry("939x750")
 
         # Inputs
@@ -66,6 +67,8 @@ class MarvelRivalsCalculator(tk.Tk):
         self.font_size = tk.StringVar(value="12")
 
         self.filter_var = tk.StringVar(value="All")
+
+        self.dark_mode = tk.BooleanVar(value=False)
 
         # Sort state
         self.sort_ascending = tk.BooleanVar(value=True)  # True for A-Z, False for Z-A
@@ -1439,6 +1442,7 @@ class MarvelRivalsCalculator(tk.Tk):
         settings_menu.add_command(label="Text Color", command=self.change_text_color)
         settings_menu.add_command(label="Font", command=self.change_font)
         settings_menu.add_command(label="Font Size", command=self.change_font_size)
+        settings_menu.add_command(label="Toggle Dark Mode", command=self.toggle_dark_mode)
 
         # Add Help menu to the right
         help_menu = tk.Menu(menubar, tearoff=0, bg=self.bg_color.get(), fg=self.text_color.get())
@@ -1455,6 +1459,7 @@ class MarvelRivalsCalculator(tk.Tk):
         frame.columnconfigure(5, weight=1)
         frame.rowconfigure(11, weight=0)  # mission list (fixed height but scrollable)
         frame.rowconfigure(14, weight=1)  # output expands
+        frame.rowconfigure(15, weight=0) # footer does not expand
 
         # Set font for frame
         self.custom_font = font.Font(family=self.font_family.get(), size=int(self.font_size.get()))
@@ -1572,10 +1577,11 @@ class MarvelRivalsCalculator(tk.Tk):
             output_frame,
             height=15,
             width=90,
-            wrap="none",  # ← IMPORTANTE: disabilita wrap per abilitare scroll orizzontale
+            wrap="none",
             font=self.custom_font,
             fg=self.text_color.get(),
-            bg=self.bg_color.get()
+            bg=self.bg_color.get(),
+            state="disabled"
         )
 
         # Scrollbars
@@ -1591,6 +1597,25 @@ class MarvelRivalsCalculator(tk.Tk):
         # Make the Text widget expand
         output_frame.columnconfigure(0, weight=1)
         output_frame.rowconfigure(0, weight=1)
+
+        # Footer with GitHub link
+        footer_frame = ttk.Frame(frame)
+        footer_frame.grid(row=15, column=0, columnspan=6, sticky="w", pady=(10, 0))
+
+        footer_font = font.Font(family=self.font_family.get(), size=max(8, int(self.font_size.get()) - 2))
+
+        footer_label = ttk.Label(
+            footer_frame,
+            text="🔗 GitHub Repository",
+            font=self.custom_font,
+            foreground="blue",
+            cursor="hand2"
+        )
+        footer_label.pack(side="left")
+        footer_label.bind("<Button-1>",
+                          lambda e: webbrowser.open("https://github.com/P13rlU/marvel-rivals-lord-calculator"))
+
+        self.apply_theme()
 
     def show_help(self):
         help_text = (
@@ -1667,6 +1692,86 @@ class MarvelRivalsCalculator(tk.Tk):
                 font_window.destroy()
 
         ttk.Button(font_window, text="Apply", command=apply_font).pack(pady=5)
+
+    def set_theme_colors(self):
+        # set colors based on dark mode
+        if self.dark_mode.get():
+            # Dark mode
+            self.bg_color.set("#2b2b2b")
+            self.fg_color.set("#ffffff")
+            self.text_color.set("#e0e0e0")
+            self.listbox_bg = "#3c3f41"
+            self.listbox_fg = "#ffffff"
+            self.text_bg = "#1e1e1e"
+            self.text_fg = "#dcdcdc"
+        else:
+            # Light mode
+            self.bg_color.set("#ffffff")
+            self.fg_color.set("#000000")
+            self.text_color.set("#000000")
+            self.listbox_bg = "#ffffff"
+            self.listbox_fg = "#000000"
+            self.text_bg = "#ffffff"
+            self.text_fg = "#000000"
+
+    def apply_theme(self):
+        """Applica un tema chiaro o scuro a tutta l'applicazione."""
+        if self.dark_mode.get():
+            # Dark mode colors
+            bg = "#2b2b2b"
+            fg = "#ffffff"
+            text_bg = "#1e1e1e"
+            text_fg = "#dcdcdc"
+            listbox_bg = "#3c3f41"
+            listbox_fg = "#ffffff"
+            button_bg = "#3c3f41"
+            button_fg = "#ffffff"
+            entry_bg = "#3c3f41"
+            entry_fg = "#ffffff"
+        else:
+            # Light mode colors
+            bg = "#ffffff"
+            fg = "#000000"
+            text_bg = "#ffffff"
+            text_fg = "#000000"
+            listbox_bg = "#ffffff"
+            listbox_fg = "#000000"
+            button_bg = "#ffffff"
+            button_fg = "#000000"
+            entry_bg = "#ffffff"
+            entry_fg = "#000000"
+
+        # Main window background
+        self.config(bg=bg)
+
+        # Update StringVars (used by some widgets)
+        self.bg_color.set(bg)
+        self.fg_color.set(fg)
+        self.text_color.set(text_fg)
+
+        # Configure ttk styles
+        style = ttk.Style()
+
+        # Base style for all widgets
+        style.configure("TFrame", background=bg)
+        style.configure("TLabel", background=bg, foreground=text_fg, font=self.custom_font)
+        style.configure("TButton", background=button_bg, foreground=button_fg, font=self.custom_font)
+        style.configure("TCheckbutton", background=bg, foreground=text_fg, font=self.custom_font)
+        style.configure("TRadiobutton", background=bg, foreground=text_fg, font=self.custom_font)
+
+        # Entry and Combobox (may not fully support bg on all platforms)
+        style.configure("TEntry", fieldbackground=entry_bg, foreground=entry_fg, font=self.custom_font)
+        style.configure("TCombobox", fieldbackground=entry_bg, foreground=entry_fg, font=self.custom_font)
+
+        # Force Listbox and Text (non-ttk) to use colors
+        self.mission_list.config(bg=listbox_bg, fg=listbox_fg)
+        self.output.config(bg=text_bg, fg=text_fg)
+
+        # If you have other Tkinter (non-ttk) widgets, update them here
+
+    def toggle_dark_mode(self):
+        self.dark_mode.set(not self.dark_mode.get())
+        self.apply_theme()
 
     def change_font_size(self):
         font_size_window = tk.Toplevel(self)
@@ -1824,6 +1929,13 @@ class MarvelRivalsCalculator(tk.Tk):
 
         self.mission_list.delete(index)
 
+    def _set_output_text(self, text: str):
+        """Safely update the output widget text (readonly)."""
+        self.output.config(state="normal")
+        self.output.delete(1.0, tk.END)
+        self.output.insert(tk.END, text)
+        self.output.config(state="disabled")
+
     def calculate(self):
         try:
             current_rank = self.current_rank_var.get()
@@ -1849,34 +1961,39 @@ class MarvelRivalsCalculator(tk.Tk):
         mission_points = POINTS_PER_MISSION[self.current_mission_rank.get()] if self.characters else 40
         total_missions = math.ceil(remaining / mission_points) if remaining > 0 else 0
 
-        self.output.delete("1.0", tk.END)
+        # Build output string
         char = self.current_character.get().replace(" ★", "")
         star = "★" if char in self.completed_characters else ""
-        self.output.insert(tk.END, f"Character: {char} {star}\n")
-        self.output.insert(tk.END, f"Playtime points: {play_points:,}\n")  # Add comma
-        self.output.insert(tk.END, f"Points still needed to Lord: {remaining:,}\n")  # Add comma
-        self.output.insert(tk.END, f"Total missions required (at {mission_points:,} pts each): {total_missions:,}\n\n")  # Add comma
+        output_lines = []
+        output_lines.append(f"Character: {char} {star}")
+        output_lines.append(f"Playtime points: {play_points:,}")
+        output_lines.append(f"Points still needed to Lord: {remaining:,}")
+        output_lines.append(f"Total missions required (at {mission_points:,} pts each): {total_missions:,}")
+        output_lines.append("")  # Empty line
 
         if not self.characters:
-            self.output.insert(tk.END, "No missions added yet.\n")
-            return
+            output_lines.append("No missions added yet.")
+        else:
+            split = 1 / len(self.characters) if len(self.characters) > 0 else 0
+            for name, points in self.characters.items():
+                num_missions = math.ceil(total_missions * split)
+                data = self.mission_requirements.get(name, {})
+                req = data.get("requirement")
+                is_completed = (char in self.completed_missions and
+                                self.current_mission_rank.get() in self.completed_missions[char] and
+                                name in self.completed_missions[char][self.current_mission_rank.get()])
+                star = "★" if is_completed else ""
+                formatted_points = f"{points * num_missions:,}"
+                output_lines.append(f"{name} {star}: {num_missions:,} missions ({formatted_points} pts)")
+                if req:
+                    total_req = num_missions * req
+                    formatted_req = f"{total_req:,}"
+                    output_lines.append(f"  → {formatted_req} required")
+                output_lines.append("")  # Empty line after each mission
 
-        split = 1 / len(self.characters) if len(self.characters) > 0 else 0
-        for name, points in self.characters.items():
-            num_missions = math.ceil(total_missions * split)
-            data = self.mission_requirements.get(name, {})
-            req = data.get("requirement")
-            is_completed = (char in self.completed_missions and
-                           self.current_mission_rank.get() in self.completed_missions[char] and
-                           name in self.completed_missions[char][self.current_mission_rank.get()])
-            star = "★" if is_completed else ""
-            formatted_points = f"{points * num_missions:,}"  # Add comma
-            self.output.insert(tk.END, f"{name} {star}: {num_missions:,} missions ({formatted_points} pts)\n")  # Add comma
-            if req:
-                total_req = num_missions * req
-                formatted_req = f"{total_req:,}"  # Add comma
-                self.output.insert(tk.END, f"  → {formatted_req} required\n")
-            self.output.insert(tk.END, "\n")
+        # Join and set output
+        output_text = "\n".join(output_lines)
+        self._set_output_text(output_text)
 
     def on_filter_change(self, event=None):
         # Reset search and update character list
