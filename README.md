@@ -43,6 +43,11 @@ Credits for the Original Project go to: [xSkullHD](https://www.nexusmods.com/pro
 >
 > The app is **100% safe** — you can verify by checking the [source code](https://github.com/P13rlU/marvel-rivals-lord-calculator).
 
+> 💡 **Note on Dark Mode**:  
+> On Windows, the dark theme applies to the background and output panel, but input fields, dropdowns, and buttons may remain light.  
+> This is a known limitation of Tkinter on Windows and does not affect functionality.  
+> The application remains fully usable — only the visual style of some controls is not updated.
+
 ---
 
 ## 🛠️ How It Works
