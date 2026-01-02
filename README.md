@@ -43,6 +43,39 @@ Credits for the Original Project go to: [xSkullHD](https://www.nexusmods.com/pro
 >
 > The app is **100% safe** — you can verify by checking the [source code](https://github.com/P13rlU/marvel-rivals-lord-calculator).
 
+## 🐍 Use the Python Script Directly
+
+If you prefer to run the calculator directly from source (without the `.exe`), you only need **Python** installed.
+
+### 🔧 Requirements
+- **Python 3.8 or newer**
+- The standard library module `'tkinter'` (included by default with most Python installations on Windows/macOS; on some Linux distributions, you may need to install it separately)
+
+> 💡 **On Linux (e.g., Ubuntu/Debian)**, if you get an error about `'tkinter'`:
+> ```
+> sudo apt install python3-tk
+> ```
+
+### ▶️ How to Run
+
+1. **Download the Python script**  
+   Either clone the repo:
+   ```
+   git clone https://github.com/P13rlU/marvel-rivals-lord-calculator.git
+   cd marvel-rivals-lord-calculator
+   ```
+   Or just download `RivalsCalculateLord.py` from the repository.
+
+2. **Run the script**
+   ```
+   python RivalsCalculateLord.py
+   ```
+   (or `python3` on some systems)
+
+✅ That’s it! The GUI will open, and all features (saving, dark mode, search, etc.) work the same as in the `.exe`.
+
+> 💾 Your progress is saved in `completed.json` in the same folder as the script.
+
 > 💡 **Note on Dark Mode**:  
 > On Windows, the dark theme applies to the background and output panel, but input fields, dropdowns, and buttons may remain light.  
 > This is a known limitation of Tkinter on Windows and does not affect functionality.  
