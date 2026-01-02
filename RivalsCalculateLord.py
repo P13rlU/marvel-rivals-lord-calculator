@@ -1602,11 +1602,11 @@ class MarvelRivalsCalculator(tk.Tk):
         footer_frame = ttk.Frame(frame)
         footer_frame.grid(row=15, column=0, columnspan=6, sticky="w", pady=(10, 0))
 
-        footer_font = font.Font(family=self.font_family.get(), size=max(8, int(self.font_size.get()) - 2))
+        footer_font = font.Font(family=self.font_family.get(), size=max(1, int(self.font_size.get()) - 2))
 
         footer_label = ttk.Label(
             footer_frame,
-            text="🔗 GitHub Repository",
+            text="🔗 For Updates Check Here!",
             font=self.custom_font,
             foreground="blue",
             cursor="hand2"
