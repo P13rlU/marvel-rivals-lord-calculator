@@ -2,8 +2,13 @@ name: Build Windows Executable
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:  # Permette di lanciare manualmente
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (es. v1.2)'
+        required: true
+        default: 'v1.1'
 
 jobs:
   build:
@@ -39,13 +44,12 @@ jobs:
           name: marvel-rivals-calculator-windows
           path: dist/
 
-      - name: Create Release (only on main branch push)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/Marvel Rivals Calculator.exe
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: v1.1-${{ github.run_number }}
-          name: Release v1.1 (Build #${{ github.run_number }})
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: Release ${{ github.event.inputs.tag || github.ref_name }}
           draft: false
           prerelease: false

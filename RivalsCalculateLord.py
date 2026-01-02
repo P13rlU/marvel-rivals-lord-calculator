@@ -1879,8 +1879,8 @@ class MarvelRivalsCalculator(tk.Tk):
             self.output.insert(tk.END, "\n")
 
     def on_filter_change(self, event=None):
-        """Ricarica la lista completa quando si cambia il filtro ruolo."""
-        self._full_character_list = None  # Resetta cache
+        # Reset search and update character list
+        self._full_character_list = None  # Reset cache
         self.update_char_combobox()
 
     def on_char_search(self, event=None):
@@ -1907,18 +1907,18 @@ class MarvelRivalsCalculator(tk.Tk):
             pass
 
     def on_character_selected(self, event=None):
-        """Quando un personaggio viene selezionato, aggiorna le missioni."""
+        # When a character is selected reload missions
         char = self.current_character.get().replace(" ★", "")
         # Assicurati che sia un personaggio valido (non testo casuale)
         if char in self._get_all_characters():
             self.refresh_missions()
             self.char_menu.select_clear()
         else:
-            # Se digita qualcosa di non valido, non fare nulla (o resetta)
+            # If something invalid was typed, reset to previous valid selection
             pass
 
     def _get_all_characters(self):
-        """Restituisce tutti i personaggi (piatti) dalla categorizzazione."""
+        # Cache all characters
         chars = []
         for role in self.roles.values():
             chars.extend(role)
