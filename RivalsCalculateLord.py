@@ -1939,35 +1939,49 @@ class MarvelRivalsCalculator(tk.Tk):
     def calculate(self):
         try:
             current_rank = self.current_rank_var.get()
+            target_rank = self.current_mission_rank.get()  # ← usa mission rank come target
             current_points = int(self.current_points_var.get())
             hours_played = int(self.hours_played_var.get())
         except ValueError:
             messagebox.showerror("Error", "Points and hours must be numbers")
             return
 
-        # Calculate points to Lord
-        points_to_lord = 0
-        found_rank = False
+        # Validation: target rank must be higher than current rank
         ranks = list(RANK_THRESHOLDS.keys())
-        for i, rank in enumerate(ranks):
-            if rank == current_rank:
-                found_rank = True
-                points_to_lord += (RANK_THRESHOLDS[rank] - current_points)
-            elif found_rank and rank != "Lord":
-                points_to_lord += RANK_THRESHOLDS[rank]
+        try:
+            current_index = ranks.index(current_rank)
+            target_index = ranks.index(target_rank)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid rank selected")
+            return
+
+        if target_index <= current_index:
+            messagebox.showerror("Error", "Target rank must be higher than current rank")
+            return
+
+        # Calculate points needed
+        points_to_target = 0
+        for i in range(current_index, target_index):
+            rank = ranks[i]
+            if i == current_index:
+                # Remaining points for current rank
+                points_to_target += max(0, RANK_THRESHOLDS[rank] - current_points)
+            else:
+                # Total points for intermediate ranks
+                points_to_target += RANK_THRESHOLDS[rank]
 
         play_points = hours_played * 60
-        remaining = max(0, points_to_lord - play_points)
-        mission_points = POINTS_PER_MISSION[self.current_mission_rank.get()] if self.characters else 40
+        remaining = max(0, points_to_target - play_points)
+        mission_points = POINTS_PER_MISSION[target_rank] if self.characters else 40
         total_missions = math.ceil(remaining / mission_points) if remaining > 0 else 0
 
-        # Build output string
+        # Build output
         char = self.current_character.get().replace(" ★", "")
         star = "★" if char in self.completed_characters else ""
         output_lines = []
         output_lines.append(f"Character: {char} {star}")
         output_lines.append(f"Playtime points: {play_points:,}")
-        output_lines.append(f"Points still needed to Lord: {remaining:,}")
+        output_lines.append(f"Points still needed to {target_rank}: {remaining:,}")  # ← Show correct target
         output_lines.append(f"Total missions required (at {mission_points:,} pts each): {total_missions:,}")
         output_lines.append("")  # Empty line
 
@@ -1980,8 +1994,8 @@ class MarvelRivalsCalculator(tk.Tk):
                 data = self.mission_requirements.get(name, {})
                 req = data.get("requirement")
                 is_completed = (char in self.completed_missions and
-                                self.current_mission_rank.get() in self.completed_missions[char] and
-                                name in self.completed_missions[char][self.current_mission_rank.get()])
+                                target_rank in self.completed_missions[char] and
+                                name in self.completed_missions[char][target_rank])
                 star = "★" if is_completed else ""
                 formatted_points = f"{points * num_missions:,}"
                 output_lines.append(f"{name} {star}: {num_missions:,} missions ({formatted_points} pts)")
@@ -1991,7 +2005,6 @@ class MarvelRivalsCalculator(tk.Tk):
                     output_lines.append(f"  → {formatted_req} required")
                 output_lines.append("")  # Empty line after each mission
 
-        # Join and set output
         output_text = "\n".join(output_lines)
         self._set_output_text(output_text)
 
