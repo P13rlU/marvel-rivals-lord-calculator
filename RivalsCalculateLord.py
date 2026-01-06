@@ -1939,7 +1939,7 @@ class MarvelRivalsCalculator(tk.Tk):
     def calculate(self):
         try:
             current_rank = self.current_rank_var.get()
-            target_rank = self.current_mission_rank.get()  # ← usa mission rank come target
+            target_rank = self.current_mission_rank.get()  # ← use mission rank as target
             current_points = int(self.current_points_var.get())
             hours_played = int(self.hours_played_var.get())
         except ValueError:
